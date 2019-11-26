@@ -27,4 +27,4 @@ myElement =
         , Border.rounded 3
         , padding 30
         ]
-        (text "stylish!")
+        (text "Hello!")
