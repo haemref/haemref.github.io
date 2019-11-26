@@ -136,8 +136,8 @@ view model =
         [ div []
             [ content ]
         , ul []
-            [ viewLink "home"
-            , viewLink "contact"
+            [ viewLink "Home"
+            , viewLink "Contact"
             ]
         ]
     }
