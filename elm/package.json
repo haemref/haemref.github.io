@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "start": "parcel index.html",
+    "prebuild": "rm ../elm.*.js && rm ../elm.*.js.map",
     "build": "parcel build index.html -d .."
   },
   "devDependencies": {
