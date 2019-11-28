@@ -2,12 +2,15 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Element as El
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Url
-import Route as Route
 import Page.Contact as Contact
 import Page.Home as Home
+import Page.Ripss as Ripss
+import Route as Route
+import Url
+
 
 
 -- MAIN
@@ -15,28 +18,30 @@ import Page.Home as Home
 
 main : Program () Model Msg
 main =
-  Browser.application
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    , onUrlChange = UrlChanged
-    , onUrlRequest = LinkClicked
-    }
+    Browser.application
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
+        }
 
 
 
 -- MODEL
 
+
 type Page
-    = Home 
+    = Home
     | Contact
+    | Ripss
+
 
 type alias Model =
     { key : Nav.Key
     , page : Page
     }
-
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -60,69 +65,63 @@ page url model =
         Route.Contact ->
             ( { model | page = Contact }, Cmd.none )
 
-        -- Route.Login ->
-        -- loginPage model Login.init
+        Route.Ripss ->
+            ( { model | page = Ripss }, Cmd.none )
 
 
 
-
+-- Route.Login ->
+-- loginPage model Login.init
 -- loginPage : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
 -- loginPage model ( subModel, subCmd ) =
 --     ( { model | page = Login subModel }
 --     , Cmd.map LoginMsg subCmd
 --     )
-
-
 -- UPDATE
 
 
 type Msg
-  = LinkClicked Browser.UrlRequest
-  | UrlChanged Url.Url
+    = LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    LinkClicked urlRequest ->
-      case urlRequest of
-        Browser.Internal url ->
-          ( model, Nav.pushUrl model.key (Url.toString url) )
+    case msg of
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
 
-        Browser.External href ->
-          ( model, Nav.load href )
+                Browser.External href ->
+                    ( model, Nav.load href )
 
-    UrlChanged url ->
-      page url model
-
-    -- LoginMsg msg ->
-    -- case model.page of
-    --     Login subModel ->
-    --         updateLogin model (Login.update msg subModel)
-
-    --     _ ->
-    --         ( model, Cmd.none )
+        UrlChanged url ->
+            page url model
 
 
 
+-- LoginMsg msg ->
+-- case model.page of
+--     Login subModel ->
+--         updateLogin model (Login.update msg subModel)
+--     _ ->
+--         ( model, Cmd.none )
 -- updateLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
 -- updateLogin model ( subModel, cmds ) =
 --     ( { model | page = Login subModel }
 --     , Cmd.map LoginMsg cmds
 --     )
-
-
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-  Sub.none
+    Sub.none
 
 
 
 -- VIEW
-
 
 
 view : Model -> Browser.Document Msg
@@ -138,6 +137,7 @@ view model =
         , ul []
             [ viewLink "Home"
             , viewLink "Contact"
+            , viewLink "Ripss"
             ]
         ]
     }
@@ -151,13 +151,14 @@ viewPage model =
                 Home ->
                     { title = "Home", content = Home.view }
 
-                Contact  ->
+                Contact ->
                     { title = "Contact", content = Contact.view }
 
-                -- Login subModel ->
-                --     viewSubPage (Login.view subModel) LoginMsg
+                Ripss ->
+                    { title = "RIPSS", content = Ripss.view }
 
-
+        -- Login subModel ->
+        --     viewSubPage (Login.view subModel) LoginMsg
     in
     { title = title, content = content }
 
@@ -169,4 +170,4 @@ viewSubPage { title, content } toMsg =
 
 viewLink : String -> Html msg
 viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
+    li [] [ a [ href (String.toLower path) ] [ text path ] ]
