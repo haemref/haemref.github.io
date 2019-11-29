@@ -1,10 +1,7 @@
 module Page.Contact exposing (view)
 
-import Html exposing (Html, div, text)
+import Element as El
 
 
-view : Html msg
 view =
-    div []
-        [ text "CONTACT"
-        ]
+    El.el [] (El.text "Contact")

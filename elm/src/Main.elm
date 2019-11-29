@@ -2,9 +2,8 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
-import Element as El
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Element exposing (Element, el, fill, padding, row, text, width)
+import Element.Events as Event
 import Page.Contact as Contact
 import Page.Home as Home
 import Page.Ripss as Ripss
@@ -33,62 +32,70 @@ main =
 
 
 type Page
-    = Home
-    | Contact
-    | Ripss
+    = HomePage Home.Model
+    | ContactPage
+    | RipssPage
 
 
 type alias Model =
     { key : Nav.Key
+    , url : Url.Url
     , page : Page
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
-    page url
-        { key = key
-        , page = Home
-        }
-
-
-page : Url.Url -> Model -> ( Model, Cmd Msg )
-page url model =
+init _ url key =
     let
-        route =
-            Route.fromUrl url
+        ( page, cmd ) =
+            changeRoute key url
     in
-    case route of
-        Route.Home ->
-            ( { model | page = Home }, Cmd.none )
-
-        Route.Contact ->
-            ( { model | page = Contact }, Cmd.none )
-
-        Route.Ripss ->
-            ( { model | page = Ripss }, Cmd.none )
+    ( Model key url page, cmd )
 
 
+changeRoute : Nav.Key -> Url.Url -> ( Page, Cmd Msg )
+changeRoute key url =
+    case Route.fromUrl url of
+        Nothing ->
+            initHome
 
--- Route.Login ->
--- loginPage model Login.init
--- loginPage : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
--- loginPage model ( subModel, subCmd ) =
---     ( { model | page = Login subModel }
---     , Cmd.map LoginMsg subCmd
---     )
--- UPDATE
+        Just Route.Home ->
+            initHome
+
+        Just Route.Contact ->
+            initContact
+
+        Just Route.Ripss ->
+            initRipss
+
+
+initHome : ( Page, Cmd Msg )
+initHome =
+    Home.init
+        |> (\( m, c ) -> ( HomePage m, c |> Cmd.map HomeMsg ))
+
+
+initContact : ( Page, Cmd Msg )
+initContact =
+    ( ContactPage, Cmd.none )
+
+
+initRipss : ( Page, Cmd Msg )
+initRipss =
+    ( RipssPage, Cmd.none )
 
 
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | UserClickedLogo
+    | HomeMsg Home.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        LinkClicked urlRequest ->
+    case ( msg, model.page ) of
+        ( LinkClicked urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Nav.pushUrl model.key (Url.toString url) )
@@ -96,22 +103,30 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        UrlChanged url ->
-            page url model
+        ( UrlChanged url, _ ) ->
+            let
+                ( page, cmd ) =
+                    changeRoute model.key url
+            in
+            ( { model | url = url, page = page }
+            , cmd
+            )
+
+        ( UserClickedLogo, _ ) ->
+            ( model, Route.pushUrl model.key Route.Home )
+
+        ( HomeMsg homeMsg, HomePage homeModel ) ->
+            let
+                ( subModel, subCmd ) =
+                    Home.update model.key homeMsg homeModel
+            in
+            ( { model | page = HomePage subModel }, subCmd |> Cmd.map HomeMsg )
+
+        ( _, _ ) ->
+            ( model, Cmd.none )
 
 
 
--- LoginMsg msg ->
--- case model.page of
---     Login subModel ->
---         updateLogin model (Login.update msg subModel)
---     _ ->
---         ( model, Cmd.none )
--- updateLogin : Model -> ( Login.Model, Cmd Login.Msg ) -> ( Model, Cmd Msg )
--- updateLogin model ( subModel, cmds ) =
---     ( { model | page = Login subModel }
---     , Cmd.map LoginMsg cmds
---     )
 -- SUBSCRIPTIONS
 
 
@@ -127,47 +142,54 @@ subscriptions _ =
 view : Model -> Browser.Document Msg
 view model =
     let
-        { title, content } =
-            viewPage model
+        { title, body } =
+            case model.page of
+                HomePage subModel ->
+                    { title = "Home", body = Home.view subModel |> Element.map HomeMsg }
+
+                ContactPage ->
+                    { title = "Contact", body = Contact.view }
+
+                RipssPage ->
+                    { title = "RIPSS", body = Ripss.view }
     in
     { title = title
     , body =
-        [ div []
-            [ content ]
-        , ul []
-            [ viewLink "Home"
-            , viewLink "Contact"
-            , viewLink "Ripss"
-            ]
+        [ Element.layout
+            []
+            (Element.column
+                [ Element.centerX
+                , Element.width Element.fill
+                , Element.height Element.fill
+                ]
+                [ viewHeader, body, viewFooter ]
+            )
         ]
     }
 
 
-viewPage : Model -> { title : String, content : Html Msg }
-viewPage model =
-    let
-        { title, content } =
-            case model.page of
-                Home ->
-                    { title = "Home", content = Home.view }
-
-                Contact ->
-                    { title = "Contact", content = Contact.view }
-
-                Ripss ->
-                    { title = "RIPSS", content = Ripss.view }
-
-        -- Login subModel ->
-        --     viewSubPage (Login.view subModel) LoginMsg
-    in
-    { title = title, content = content }
+viewHeader : Element Msg
+viewHeader =
+    Element.row
+        [ Element.width Element.fill
+        , Element.alignLeft
+        , Element.height (Element.px 40)
+        , Element.padding 10
+        ]
+        [ Element.el
+            [ Event.onClick UserClickedLogo
+            , Element.pointer
+            ]
+            (Element.text "Haematology Reference")
+        ]
 
 
-viewSubPage : { title : String, content : Html a } -> (a -> msg) -> { title : String, content : Html msg }
-viewSubPage { title, content } toMsg =
-    { title = title, content = content |> Html.map toMsg }
-
-
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href (String.toLower path) ] [ text path ] ]
+viewFooter : Element msg
+viewFooter =
+    Element.row
+        [ Element.width Element.fill
+        , Element.height (Element.px 72)
+        , Element.padding 10
+        , Element.alignBottom
+        ]
+        [ Element.column [ Element.centerX ] [ Element.text "Footer" ] ]

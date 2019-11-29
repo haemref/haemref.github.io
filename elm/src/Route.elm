@@ -1,10 +1,10 @@
-module Route exposing (Route(..), fromUrl, href, replaceUrl)
+module Route exposing (Route(..), fromUrl, href, pushUrl, replaceUrl)
 
 import Browser.Navigation as Nav
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
+import Url.Parser as Parser exposing (Parser, oneOf, s)
 
 
 
@@ -40,11 +40,15 @@ replaceUrl key route =
     Nav.replaceUrl key (routeToString route)
 
 
-fromUrl : Url -> Route
+pushUrl : Nav.Key -> Route -> Cmd msg
+pushUrl key route =
+    Nav.pushUrl key (routeToString route)
+
+
+fromUrl : Url -> Maybe Route
 fromUrl url =
     url
         |> Parser.parse parser
-        |> Maybe.withDefault Home
 
 
 
@@ -52,18 +56,13 @@ fromUrl url =
 
 
 routeToString : Route -> String
-routeToString page =
-    "#/" ++ String.join "/" (routeToPieces page)
-
-
-routeToPieces : Route -> List String
-routeToPieces page =
-    case page of
+routeToString route =
+    case route of
         Home ->
-            []
+            "/"
 
         Contact ->
-            [ "contact" ]
+            "contact"
 
         Ripss ->
-            [ "ripss" ]
+            "ripss"

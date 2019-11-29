@@ -1,13 +1,49 @@
-module Page.Home exposing (view)
+module Page.Home exposing (Model, Msg(..), init, update, view)
 
-import Html exposing (Html, div, text)
+import Browser.Navigation as Nav
+import Element as El
+import Route as Route
+import UI.Button as Button
 
 
-view : Html msg
-view =
-    div []
-        [ text "HOME"
+
+-- MODEL
+
+
+type alias Model =
+    {}
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( Model, Cmd.none )
+
+
+
+-- UPDATE
+
+
+type Msg
+    = UserClickedButton
+
+
+update : Nav.Key -> Msg -> Model -> ( Model, Cmd Msg )
+update key msg model =
+    case msg of
+        UserClickedButton ->
+            ( model, Route.pushUrl key Route.Ripss )
+
+
+
+-- VIEW
+
+
+view model =
+    El.row []
+        [ Button.init UserClickedButton "RIPSS"
+            |> Button.toHtml
         ]
+
 
 
 -- view : Model -> { title : String, content : Html Msg }

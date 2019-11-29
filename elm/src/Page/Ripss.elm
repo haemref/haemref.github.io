@@ -1,7 +1,6 @@
 module Page.Ripss exposing (view)
 
 import Element as El
-import Html exposing (Html)
 
 
 
@@ -32,19 +31,103 @@ type alias Neutrophil =
     Float
 
 
-type alias Model =
-    { cytogenetic : Maybe Cytogenetics
-    , bmblast : Maybe BmBlast
-    , platelet : Maybe Platelet
-    , neutrophil : Maybe Neutrophil
-    , haemoglobin : Maybe Haemoglobin
-    }
+type Ripps
+    = Ripps
+        { cytogenetics : Cytogenetics
+        , bmBlast : BmBlast
+        , platelet : Platelet
+        , neutrophil : Neutrophil
+        , haemoglobin : Haemoglobin
+        , score : Float
+        }
 
 
-type RIPPS
-    = Cytogenetics Haemoglobin BmBlast Platelet Neutrophil
+bmBlastScore : BmBlast -> Float
+bmBlastScore bmBlast =
+    if bmBlast > 2 && bmBlast < 5 then
+        1
+
+    else if bmBlast >= 5 && bmBlast <= 10 then
+        2
+
+    else if bmBlast > 10 then
+        3
+
+    else
+        0
 
 
-view : Html msg
+haemoglobinScore : Haemoglobin -> Float
+haemoglobinScore haemoglobin =
+    if haemoglobin >= 8 && haemoglobin < 10 then
+        1
+
+    else if haemoglobin < 8 then
+        1.5
+
+    else
+        0
+
+
+plateletScore : Platelet -> Float
+plateletScore platelet =
+    if platelet >= 50 && platelet < 100 then
+        0.5
+
+    else if platelet < 50 then
+        1
+
+    else
+        0
+
+
+neutrophilScore : Neutrophil -> Float
+neutrophilScore neutrophil =
+    if neutrophil < 0.8 then
+        0.5
+
+    else
+        0
+
+
+cytogeneticsScore : Cytogenetics -> Float
+cytogeneticsScore cytogenetics =
+    case cytogenetics of
+        VeryGood ->
+            0
+
+        Good ->
+            1
+
+        Intermediate ->
+            2
+
+        Poor ->
+            3
+
+        VeryPoor ->
+            4
+
+
+init : Cytogenetics -> BmBlast -> Platelet -> Neutrophil -> Haemoglobin -> Ripps
+init cytogenetics bmBlast platelet neutrophil haemoglobin =
+    let
+        score =
+            cytogeneticsScore cytogenetics
+                + bmBlastScore bmBlast
+                + plateletScore platelet
+                + neutrophilScore neutrophil
+                + haemoglobinScore haemoglobin
+    in
+    Ripps
+        { cytogenetics = cytogenetics
+        , bmBlast = bmBlast
+        , platelet = platelet
+        , neutrophil = neutrophil
+        , haemoglobin = haemoglobin
+        , score = score
+        }
+
+
 view =
-    El.layout [] <| El.el [] (El.text "RIPSS")
+    El.el [] (El.text "RIPSS")
