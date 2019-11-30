@@ -3,12 +3,15 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Nav
 import Element exposing (Element, el, fill, padding, row, text, width)
+import Element.Border as Border
 import Element.Events as Event
 import Element.Font as Font
+import Page.About as About
 import Page.Contact as Contact
 import Page.Home as Home
 import Page.Ripss as Ripss
 import Route as Route
+import UI.Link as Link
 import Url
 
 
@@ -36,6 +39,7 @@ type Page
     = HomePage Home.Model
     | ContactPage
     | RipssPage
+    | AboutPage
 
 
 type alias Model =
@@ -69,6 +73,9 @@ changeRoute key url =
         Just Route.Ripss ->
             initRipss
 
+        Just Route.About ->
+            initAbout
+
 
 initHome : ( Page, Cmd Msg )
 initHome =
@@ -86,10 +93,17 @@ initRipss =
     ( RipssPage, Cmd.none )
 
 
+initAbout : ( Page, Cmd Msg )
+initAbout =
+    ( AboutPage, Cmd.none )
+
+
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | UserClickedLogo
+    | UserClickedAbout
+    | UserClickedHome
+    | UserClickedContact
     | HomeMsg Home.Msg
 
 
@@ -113,8 +127,14 @@ update msg model =
             , cmd
             )
 
-        ( UserClickedLogo, _ ) ->
+        ( UserClickedAbout, _ ) ->
+            ( model, Route.pushUrl model.key Route.About )
+
+        ( UserClickedHome, _ ) ->
             ( model, Route.pushUrl model.key Route.Home )
+
+        ( UserClickedContact, _ ) ->
+            ( model, Route.pushUrl model.key Route.Contact )
 
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             let
@@ -153,6 +173,9 @@ view model =
 
                 RipssPage ->
                     { title = "RIPSS", body = Ripss.view }
+
+                AboutPage ->
+                    { title = "About", body = About.view }
     in
     { title = title
     , body =
@@ -168,7 +191,10 @@ view model =
                 , Element.width Element.fill
                 , Element.height Element.fill
                 ]
-                [ viewHeader, body, viewFooter ]
+                [ viewHeader
+                , Element.row [ Element.height Element.fill, Element.centerX, Element.height (Element.px 500) ] [ body ]
+                , Element.row [ Element.width Element.fill ] [ viewFooter ]
+                ]
             )
         ]
     }
@@ -181,12 +207,24 @@ viewHeader =
         , Element.alignLeft
         , Element.height (Element.px 40)
         , Element.padding 10
+        , Element.spacingXY 16 0
+        , Font.size 14
         ]
-        [ Element.el
-            [ Event.onClick UserClickedLogo
-            , Element.pointer
-            ]
-            (Element.text "About")
+        [ Link.init
+            UserClickedHome
+            "/"
+            "Home"
+            |> Link.toHtml
+        , Link.init
+            UserClickedAbout
+            "about"
+            "About"
+            |> Link.toHtml
+        , Link.init
+            UserClickedContact
+            "contact"
+            "Contact"
+            |> Link.toHtml
         ]
 
 
@@ -194,8 +232,12 @@ viewFooter : Element msg
 viewFooter =
     Element.row
         [ Element.width Element.fill
-        , Element.height (Element.px 72)
         , Element.padding 10
-        , Element.alignBottom
+        , Border.solid
+        , Border.color (Element.rgb255 180 180 180)
+        , Border.widthEach { bottom = 0, left = 0, right = 0, top = 2 }
         ]
-        [ Element.column [ Element.centerX ] [ Element.text "Footer" ] ]
+        [ Element.column [ Element.centerX, Element.padding 20 ]
+            [ Element.el [] (Element.text "...other things will go here...")
+            ]
+        ]

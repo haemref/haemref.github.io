@@ -14,6 +14,7 @@ import Url.Parser as Parser exposing (Parser, oneOf, s)
 type Route
     = Home
     | Contact
+    | About
     | Ripss
 
 
@@ -22,6 +23,7 @@ parser =
     oneOf
         [ Parser.map Home Parser.top
         , Parser.map Contact (s "contact")
+        , Parser.map About (s "about")
         , Parser.map Ripss (s "ripss")
         ]
 
@@ -66,3 +68,6 @@ routeToString route =
 
         Ripss ->
             "ripss"
+
+        About ->
+            "about"
