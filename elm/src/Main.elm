@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Element exposing (Element, el, fill, padding, row, text, width)
 import Element.Events as Event
+import Element.Font as Font
 import Page.Contact as Contact
 import Page.Home as Home
 import Page.Ripss as Ripss
@@ -155,8 +156,13 @@ view model =
     in
     { title = title
     , body =
-        [ Element.layout
-            []
+        [ Element.layoutWith
+            { options =
+                [ Element.focusStyle
+                    (Element.FocusStyle (Just (Element.rgb255 68 127 245)) Nothing (Just { color = Element.rgb255 68 127 245, offset = ( 0, 0 ), blur = 0, size = 1 }))
+                ]
+            }
+            [ Font.size 16 ]
             (Element.column
                 [ Element.centerX
                 , Element.width Element.fill
@@ -180,7 +186,7 @@ viewHeader =
             [ Event.onClick UserClickedLogo
             , Element.pointer
             ]
-            (Element.text "Haematology Reference")
+            (Element.text "About")
         ]
 
 

@@ -1,8 +1,13 @@
 module UI.TextField exposing (..)
 
 import Element as Element exposing (Element)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Events as Event
 import Element.Input as Input
+import Svg as Svg
+import Svg.Attributes as Svga
+import UI.Button as Button
 
 
 type FieldType msg
@@ -10,6 +15,7 @@ type FieldType msg
     | CurrentPassword msg Show
     | Email
     | Text
+    | Search msg
 
 
 type alias Options msg =
@@ -96,6 +102,29 @@ toHtml (TextField options msg text_ label_) =
                 , text = text_
                 }
 
+        Search msg_ ->
+            Element.row
+                [ Element.onRight
+                    (Element.el
+                        [ Element.alignRight
+                        , Element.pointer
+                        , Element.paddingXY 6 0
+                        , Element.moveRight 0.45
+                        , Event.onClick msg_
+                        , Background.color (Element.rgb255 68 127 245)
+                        ]
+                        searchIcon
+                    )
+                ]
+                [ Input.search
+                    ([] ++ focused)
+                    { label = Input.labelHidden label_
+                    , onChange = msg
+                    , placeholder = Nothing
+                    , text = text_
+                    }
+                ]
+
         CurrentPassword msg_ show_ ->
             Element.row
                 [ Element.inFront
@@ -126,3 +155,34 @@ toHtml (TextField options msg text_ label_) =
                     , show = show_
                     }
                 ]
+
+
+searchIcon =
+    Element.el
+        []
+        (Svg.svg
+            [ Svga.width "40"
+            , Svga.height "42"
+            , Svga.viewBox "0 0 40 40"
+            , Svga.fill "#447ff5"
+            ]
+            [ Svg.circle
+                [ Svga.cx "18"
+                , Svga.cy "18"
+                , Svga.r "10"
+                , Svga.stroke "#fff"
+                , Svga.strokeWidth "2"
+                ]
+                []
+            , Svg.line
+                [ Svga.x1 "23"
+                , Svga.x2 "28"
+                , Svga.y1 "28"
+                , Svga.y2 "36"
+                , Svga.stroke "#fff"
+                , Svga.strokeWidth "2"
+                ]
+                []
+            ]
+            |> Element.html
+        )

@@ -2,8 +2,10 @@ module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Browser.Navigation as Nav
 import Element as El
+import Element.Region as Region
 import Route as Route
 import UI.Button as Button
+import UI.TextField as TextField
 
 
 
@@ -11,12 +13,13 @@ import UI.Button as Button
 
 
 type alias Model =
-    {}
+    { search : String
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model, Cmd.none )
+    ( Model "", Cmd.none )
 
 
 
@@ -24,14 +27,18 @@ init =
 
 
 type Msg
-    = UserClickedButton
+    = UserChangedSearch String
+    | UserClickedSearch
 
 
 update : Nav.Key -> Msg -> Model -> ( Model, Cmd Msg )
 update key msg model =
     case msg of
-        UserClickedButton ->
-            ( model, Route.pushUrl key Route.Ripss )
+        UserChangedSearch search ->
+            ( { model | search = search }, Cmd.none )
+
+        UserClickedSearch ->
+            ( model, Cmd.none )
 
 
 
@@ -39,9 +46,12 @@ update key msg model =
 
 
 view model =
-    El.row []
-        [ Button.init UserClickedButton "RIPSS"
-            |> Button.toHtml
+    El.column [ El.centerX, El.paddingXY 100 100, El.spacing 50 ]
+        [ El.el [ Region.heading 2, El.centerX, El.moveRight 20 ] (El.text "Haematology Reference")
+        , TextField.init UserChangedSearch model.search "Search"
+            |> TextField.withFieldType (TextField.Search UserClickedSearch)
+            |> TextField.withFocus True
+            |> TextField.toHtml
         ]
 
 
