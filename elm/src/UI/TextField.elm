@@ -115,6 +115,7 @@ toHtml (TextField options msg text_ label_) =
                         ]
                         searchIcon
                     )
+                , Element.moveLeft 28
                 ]
                 [ Input.search
                     ([] ++ focused)

@@ -47,7 +47,7 @@ update key msg model =
 
 view model =
     El.column [ El.centerX, El.paddingXY 100 100, El.spacing 50 ]
-        [ El.el [ Region.heading 2, El.centerX, El.moveRight 20 ] (El.text "Haematology Reference")
+        [ El.el [ Region.heading 2, El.centerX ] (El.text "Haematology Reference")
         , TextField.init UserChangedSearch model.search "Search"
             |> TextField.withFieldType (TextField.Search UserClickedSearch)
             |> TextField.withFocus True
