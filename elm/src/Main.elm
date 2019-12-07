@@ -192,7 +192,13 @@ view model =
                 , Element.height Element.fill
                 ]
                 [ viewHeader
-                , Element.row [ Element.height Element.fill, Element.centerX, Element.height (Element.px 500) ] [ body ]
+                , Element.row
+                    [ Element.height Element.fill
+                    , Element.centerX
+                    , Element.height (Element.fill |> Element.minimum 500)
+                    , Element.moveUp 50
+                    ]
+                    [ body ]
                 , Element.row [ Element.width Element.fill ] [ viewFooter ]
                 ]
             )

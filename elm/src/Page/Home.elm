@@ -2,9 +2,12 @@ module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Browser.Navigation as Nav
 import Element as El
+import Element.Font as Font
 import Element.Region as Region
+import PrognosticScore.Myelodysplasia.Ripss as Ripss
 import Route as Route
 import UI.Button as Button
+import UI.Table as Table
 import UI.TextField as TextField
 
 
@@ -46,13 +49,38 @@ update key msg model =
 
 
 view model =
-    El.column [ El.centerX, El.paddingXY 100 100, El.spacing 50 ]
-        [ El.el [ Region.heading 2, El.centerX ] (El.text "Haematology Reference")
-        , TextField.init UserChangedSearch model.search "Search"
-            |> TextField.withFieldType (TextField.Search UserClickedSearch)
-            |> TextField.withFocus True
-            |> TextField.toHtml
+    El.column [ El.centerX ]
+        [ El.row [ El.centerX ]
+            [ El.column [ El.paddingXY 100 100, El.spacing 50, El.width El.fill ]
+                [ El.el [ Region.heading 2, El.centerX, Font.variant (Font.feature "sups" True) ] (El.text "Haematology Reference")
+                , TextField.init UserChangedSearch model.search "Search"
+                    |> TextField.withFieldType (TextField.Search UserClickedSearch)
+                    |> TextField.withFocus True
+                    |> TextField.toHtml
+                ]
+            ]
         ]
+
+
+marie : Person
+marie =
+    { firstname = "Marie", lastname = "Blake" }
+
+
+michael : Person
+michael =
+    { firstname = "Michael", lastname = "Blake" }
+
+
+a : { firstname : String, lastname : String }
+a =
+    { firstname = "a", lastname = "b" }
+
+
+type alias Person =
+    { firstname : String
+    , lastname : String
+    }
 
 
 
