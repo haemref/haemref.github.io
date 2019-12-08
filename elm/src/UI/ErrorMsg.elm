@@ -1,4 +1,4 @@
-module UI.ErrorMsg exposing (..)
+module UI.ErrorMsg exposing (init, toHtml)
 
 import Element as Element exposing (Element)
 

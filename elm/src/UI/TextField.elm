@@ -1,13 +1,11 @@
-module UI.TextField exposing (..)
+module UI.TextField exposing (FieldType(..), init, toHtml, withFieldType, withFocus)
 
 import Element as Element exposing (Element)
 import Element.Background as Background
-import Element.Border as Border
 import Element.Events as Event
 import Element.Input as Input
 import Svg as Svg
 import Svg.Attributes as Svga
-import UI.Button as Button
 
 
 type FieldType msg

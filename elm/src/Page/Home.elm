@@ -4,10 +4,6 @@ import Browser.Navigation as Nav
 import Element as El
 import Element.Font as Font
 import Element.Region as Region
-import PrognosticScore.Myelodysplasia.Ripss as Ripss
-import Route as Route
-import UI.Button as Button
-import UI.Table as Table
 import UI.TextField as TextField
 
 

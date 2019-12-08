@@ -1,9 +1,8 @@
 module PrognosticScore.Myelodysplasia.Ripss exposing (featureTable)
 
 import Element as Element
-import Element.Background as Background
-import Element.Font as Font
-import Html exposing (Html)
+import Html
+import UI.Table as Table
 
 
 type alias Feature =
@@ -70,6 +69,7 @@ features =
     ]
 
 
+volume : String -> Element.Element msg
 volume label =
     Html.span []
         [ Html.text label
@@ -82,36 +82,14 @@ volume label =
 
 featureTable : Element.Element msg
 featureTable =
-    Element.table [ Element.spacing 30, Background.color (Element.rgb255 220 220 220), Element.padding 20 ]
-        { data = features
-        , columns =
-            [ { header = Element.el [] (Element.text "Score")
-              , width = Element.px 80
-              , view =
-                    \f -> Element.text f.score
-              }
-            , { header = Element.text "Cytogenetic Category*"
-              , width = Element.fill
-              , view =
-                    \f -> Element.text f.cytogeneticCategory
-              }
-            , { header = Element.text "Haemoglobin (g/L)"
-              , width = Element.fill
-              , view =
-                    \f -> Element.text f.haemoglobin
-              }
-            , { header = volume "Platelets"
-              , width = Element.fill
-              , view =
-                    \f -> Element.text f.platelets
-              }
-            , { header = volume "Neutrophils"
-              , width = Element.fill
-              , view =
-                    \f -> Element.text f.neutrophils
-              }
-            ]
-        }
+    Table.init features
+        |> Table.withHeading "Revised International Prognostic Scoring System for Myelodysplastic Syndromes (RIPSS/IPSS-R)"
+        |> Table.withColumn (Element.text "Score") 80 [] (\_ -> \f -> Element.text f.score)
+        |> Table.withColumn (Element.text "Cytogenetic Category*") 200 [] (\_ -> \f -> Element.text f.cytogeneticCategory)
+        |> Table.withColumn (Element.text "Haemoglobin (g/L)") 160 [] (\_ -> \f -> Element.text f.haemoglobin)
+        |> Table.withColumn (volume "Platelets") 120 [] (\_ -> \f -> Element.text f.platelets)
+        |> Table.withColumn (volume "Neutrophils") 120 [] (\_ -> \f -> Element.text f.neutrophils)
+        |> Table.toHtml
 
 
 

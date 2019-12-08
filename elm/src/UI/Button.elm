@@ -1,10 +1,16 @@
-module UI.Button exposing (..)
+module UI.Button exposing
+    ( Enabled(..)
+    , Role(..)
+    , init
+    , toHtml
+    , withAnimation
+    , withEnabled
+    , withRole
+    )
 
 import Animation as Animation
 import Element as Element exposing (Element)
-import Element.Background as Background
 import Element.Border as Border
-import Element.Font as Font
 import Element.Input as Input
 
 

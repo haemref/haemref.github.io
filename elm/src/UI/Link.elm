@@ -1,4 +1,4 @@
-module UI.Link exposing (..)
+module UI.Link exposing (init, toHtml)
 
 import Element as Element exposing (Element)
 import Element.Events as Event
